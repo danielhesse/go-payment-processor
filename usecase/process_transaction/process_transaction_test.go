@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	mock_broker "github.com/danielhessell/payment-gateway/adapter/broker/mock"
 	"github.com/danielhessell/payment-gateway/domain/entity"
 	mock_repository "github.com/danielhessell/payment-gateway/domain/repository/mock"
 	"github.com/golang/mock/gomock"
@@ -40,7 +41,10 @@ func TestProcessTransaction_ExecuteInvalidCreditCard(t *testing.T) {
 		).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
+	producerMock.EXPECT().Publish(expectedOutput, []byte(input.ID), "transactions_result")
+
+	usecase := NewProcessTransaction(repositoryMock, producerMock, "transactions_result")
 	output, err := usecase.Execute(input)
 
 	assert.Nil(t, err)
@@ -77,7 +81,10 @@ func TestProcessTransaction_ExecuteRejectedTransaction(t *testing.T) {
 		).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
+	producerMock.EXPECT().Publish(expectedOutput, []byte(input.ID), "transactions_result")
+
+	usecase := NewProcessTransaction(repositoryMock, producerMock, "transactions_result")
 	output, err := usecase.Execute(input)
 
 	assert.Nil(t, err)
@@ -114,7 +121,10 @@ func TestProcessTransaction_ExecuteApprovedTransaction(t *testing.T) {
 		).
 		Return(nil)
 
-	usecase := NewProcessTransaction(repositoryMock)
+	producerMock := mock_broker.NewMockProducerInterface(ctrl)
+	producerMock.EXPECT().Publish(expectedOutput, []byte(input.ID), "transactions_result")
+
+	usecase := NewProcessTransaction(repositoryMock, producerMock, "transactions_result")
 	output, err := usecase.Execute(input)
 
 	assert.Nil(t, err)

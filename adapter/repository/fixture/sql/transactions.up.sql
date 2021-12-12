@@ -7,4 +7,4 @@ CREATE TABLE transactions
   error_message TEXT NOT NULL,
   created_at    TEXT NOT NULL,
   updated_at    TEXT NOT NULL
-)
+);
